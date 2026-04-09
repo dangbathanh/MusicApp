@@ -5,7 +5,6 @@ import com.backend.MusicApp.catalog.dto.songPlay.response.SongPlayResponse;
 import com.backend.MusicApp.catalog.repository.dto.SongFileProjection;
 import com.backend.MusicApp.catalog.repository.dto.SongProjection;
 import com.backend.MusicApp.common.util.MediaUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mapstruct.*;

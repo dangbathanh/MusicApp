@@ -6,13 +6,13 @@ public record SongDetailResponse(
         Long id,
         String title,
         String coverUrl,
-        List<String> artists, // Tên các nghệ sĩ tham gia
-        List<MusicFileDto> files // Các định dạng nhạc (Basic, Lossless, DSD)
+        List<String> artists,
+        List<MusicFileDto> files
 ) {
     public record MusicFileDto(
-            String quality, // 'BASIC', 'PREMIUM'
-            String url,     // Link full (đã cộng mediaBaseUrl)
-            String format,  // 'mp3', 'flac', 'dsf'
+            String quality,
+            String url,
+            String format,
             String bitrate
     ) {}
 }

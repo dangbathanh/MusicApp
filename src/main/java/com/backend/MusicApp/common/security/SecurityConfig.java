@@ -29,7 +29,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // v1: tắt CSRF cho API
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .sessionManagement(session -> session
@@ -37,13 +36,12 @@ public class SecurityConfig {
                 )
                 // cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                      .requestMatchers("/api/catalog/home").permitAll()
-                        .requestMatchers("/api/songs/**").permitAll()
+                        //.requestMatchers("/api/auth/**").permitAll()
+                    //  .requestMatchers("/api/catalog/home").permitAll()
+                     //   .requestMatchers("/api/songs/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // tạm thời chưa cần login form, jwt filter, v.v
                 .httpBasic(Customizer.withDefaults())
 
                 .addFilterBefore(jwtAuthenticationFilter,
@@ -55,7 +53,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Cho phép tất cả nguồn (phù hợp khi dev)
+        configuration.setAllowedOrigins(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
 
@@ -63,8 +61,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
-
 }
 

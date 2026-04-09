@@ -102,10 +102,8 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Device mismatch");
         }
 
-        // Thu hồi session cũ
         sessionRepository.revokeById(session.getId());
 
-        // JPA: session.getUser() đã trả về đối tượng User nhờ @ManyToOne
         User user = session.getUser();
 
         String newAccessToken = tokenGenerator.generateAccessToken(user.getId(), user.getRole());

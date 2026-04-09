@@ -7,7 +7,7 @@ public record SongProjection(
         Long id,
         String title,
         String coverUrl,
-        String artistsJson,     // JSON chứa mảng {id, name} của MAIN & FEATURED
+        String artistsJson,
         Integer durationSeconds,
         Long albumId
 ) {}

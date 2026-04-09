@@ -20,5 +20,5 @@ public class AlbumArtist {
     @JoinColumn(name = "artist_id")
     private Artist artist;
 
-    private String role; // 'MAIN' hoặc 'COLLAB'
+    private String role; //'MAIN' hoặc 'COLLAB'
 }

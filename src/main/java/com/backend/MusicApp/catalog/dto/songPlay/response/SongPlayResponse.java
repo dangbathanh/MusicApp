@@ -12,8 +12,8 @@ public record SongPlayResponse(
         String title,
         String coverUrl,
         List<ArtistObject> artists,
-        Integer durationSeconds, // Cần thiết để SeekBar hiển thị ngay lập tức
-        Long albumId,         // Để User bấm vào chuyển sang màn hình Album
+        Integer durationSeconds,
+        Long albumId,
         String url,
         String format,
         Long fileSize,

@@ -23,7 +23,7 @@ public class Album {
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
-    @Column(name = "album_type") // Ví dụ: 'ALBUM', 'SINGLE', 'EP'
+    @Column(name = "album_type") //'ALBUM', 'SINGLE', 'EP'
     private String albumType;
 
     @Column(name = "created_at", insertable = false, updatable = false, columnDefinition = "timestamptz")

@@ -19,8 +19,6 @@ public class MediaUtils {
         if (path.startsWith("http")) {
             return path;
         }
-
-        // Đảm bảo logic nối chuỗi chuẩn xác
         String sanitizedPath = path.startsWith("/") ? path : "/" + path;
         return mediaBaseUrl + sanitizedPath;
     }

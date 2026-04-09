@@ -32,8 +32,8 @@ public class JwtTokenGenerator implements TokenGenerator{
         Instant expiry = now.plus(ACCESS_TOKEN_MINUTES, ChronoUnit.MINUTES);
 
         return Jwts.builder()
-                .subject(userId.toString())           // sub
-                .claim("role", role)                     // custom claim
+                .subject(userId.toString())
+                .claim("role", role)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))
                 .signWith(key)

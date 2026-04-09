@@ -15,7 +15,6 @@ public class SongFile {
     @JoinColumn(name = "song_id", nullable = false)
     private Song song;
 
-    // Fix lỗi: found [int8], but expecting [varchar] hoặc [integer]
     @Column(name = "quality_type", columnDefinition = "int8")
     private Integer qualityType;
 
@@ -30,7 +29,6 @@ public class SongFile {
     @Column(name = "sample_rate")
     private Integer sampleRate;
 
-    // Fix lỗi: found [int2], but expecting [integer]
     @Column(name = "bit_depth", columnDefinition = "int2")
     private Integer bitDepth;
 

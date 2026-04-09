@@ -25,7 +25,6 @@ public class SongController {
             @Min(value = 1, message = "Quality thấp nhất là 1")
             @Max(value = 3, message = "Quality cao nhất là 3") Integer quality
     ) {
-        // Gọi Service để lấy dữ liệu đã qua xử lý Fallback và Mapping
         SongPlayResponse response = songService.getSongToPlay(id, quality);
 
         return ResponseEntity.ok(response);
