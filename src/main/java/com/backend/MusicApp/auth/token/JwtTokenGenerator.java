@@ -46,8 +46,8 @@ public class JwtTokenGenerator implements TokenGenerator{
         Instant expiry = now.plus(REFRESH_TOKEN_DAYS, ChronoUnit.DAYS);
 
         return Jwts.builder()
-                .subject(userId.toString())           // sub
-                .claim("type", "refresh")                // phân biệt token
+                .subject(userId.toString())
+                .claim("type", "refresh")
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))
                 .signWith(key)
