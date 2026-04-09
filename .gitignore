@@ -39,4 +39,5 @@ out/
 
 /data/
 .env
-/structure_exports/
+structure_exports/
+import_data.sql
