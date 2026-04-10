@@ -36,9 +36,9 @@ public class SecurityConfig {
                 )
                 // cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
-                        //.requestMatchers("/api/auth/**").permitAll()
-                    //  .requestMatchers("/api/catalog/home").permitAll()
-                     //   .requestMatchers("/api/songs/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                     .requestMatchers("/api/catalog/home").permitAll()
+                       .requestMatchers("/api/songs/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

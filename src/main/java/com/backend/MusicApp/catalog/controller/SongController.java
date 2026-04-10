@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/songs")
 @RequiredArgsConstructor
-@Validated // Hỗ trợ validate các tham số đầu vào
+@Validated
 public class SongController {
 
     private final SongService songService;
