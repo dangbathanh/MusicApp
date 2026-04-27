@@ -48,7 +48,7 @@ import_data.sql
 **/jdbc/
 *.log
 
-CLAUDE.md
+!CLAUDE.md
 !pom.xml
 !build.gradle
 !build.gradle.kts

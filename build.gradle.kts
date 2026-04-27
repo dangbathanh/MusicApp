@@ -35,6 +35,8 @@ dependencies {
 	//implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	compileOnly("org.projectlombok:lombok")
 
+    implementation("com.github.ben-manes.caffeine:caffeine")
+
     implementation(platform("io.jsonwebtoken:jjwt-root:0.12.6"))
     implementation("io.jsonwebtoken:jjwt-api")
     runtimeOnly("io.jsonwebtoken:jjwt-impl")

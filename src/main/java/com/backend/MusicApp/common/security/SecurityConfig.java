@@ -32,12 +32,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
-    /**
-     * AuthenticationManager dùng cho login flow trong AuthServiceImpl.
-     * setHideUserNotFoundExceptions(false) để giữ behavior cũ (USER_NOT_FOUND khi email không tồn tại),
-     * thay vì map tất cả về BadCredentialsException như default Spring.
-     * Trade-off security: tiết lộ email có tồn tại hay không — được với yêu cầu UX hiện tại.
-     */
     @Bean
     public AuthenticationManager authenticationManager(BCryptPasswordEncoder encoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
@@ -58,19 +52,19 @@ public class SecurityConfig {
                 // cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                     .requestMatchers("/api/catalog/home").permitAll()
-                       .requestMatchers("/api/songs/**").permitAll()
+                 //    .requestMatchers("/api/catalog/home").permitAll()
+                  //     .requestMatchers("/api/songs/**").permitAll()
                         .requestMatchers(
-                                "/v3/api-docs",          // File JSON chính (Cực kỳ quan trọng)
-                                "/v3/api-docs/**",       // Các file JSON phụ
-                                "/swagger-ui/**",        // Giao diện web
-                                "/swagger-ui.html",      // Đường dẫn tắt
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**"
                         ).permitAll()
                         //.requestMatchers("/api/admin/**").hasRole(UserRole.ADMIN.name())
-                        .anyRequest().permitAll()
-                     //   .anyRequest().authenticated()
+                        //.anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 .httpBasic(AbstractHttpConfigurer::disable)

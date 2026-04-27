@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface UserSessionRepository extends JpaRepository<UserSession, Long> {
     @Query("""
             SELECT s FROM UserSession s WHERE s.refreshTokenHash = :hash
-            "AND s.revokedAt IS NULL AND s.expiresAt > CURRENT_TIMESTAMP
+            AND s.revokedAt IS NULL AND s.expiresAt > CURRENT_TIMESTAMP
             """)
     Optional<UserSession> findValidByRefreshTokenHash(@Param("hash") String hash);
 
