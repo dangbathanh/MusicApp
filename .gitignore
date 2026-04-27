@@ -18,7 +18,10 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
+target/
+*.class
+*.jar
 *.iws
 *.iml
 *.ipr
@@ -38,7 +41,14 @@ out/
 *.txt
 
 /data/
+.claude
 .env
 structure_exports/
 import_data.sql
 **/jdbc/
+*.log
+
+CLAUDE.md
+!pom.xml
+!build.gradle
+!build.gradle.kts

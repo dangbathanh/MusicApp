@@ -1,21 +1,22 @@
 package com.backend.MusicApp.common.security;
 
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.security.Key;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +25,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomUserDetailsService userDetailsService;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
+
+    /**
+     * AuthenticationManager dùng cho login flow trong AuthServiceImpl.
+     * setHideUserNotFoundExceptions(false) để giữ behavior cũ (USER_NOT_FOUND khi email không tồn tại),
+     * thay vì map tất cả về BadCredentialsException như default Spring.
+     * Trade-off security: tiết lộ email có tồn tại hay không — được với yêu cầu UX hiện tại.
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(BCryptPasswordEncoder encoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(encoder);
+        provider.setHideUserNotFoundExceptions(false);
+        return new ProviderManager(provider);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,10 +60,21 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                      .requestMatchers("/api/catalog/home").permitAll()
                        .requestMatchers("/api/songs/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/v3/api-docs",          // File JSON chính (Cực kỳ quan trọng)
+                                "/v3/api-docs/**",       // Các file JSON phụ
+                                "/swagger-ui/**",        // Giao diện web
+                                "/swagger-ui.html",      // Đường dẫn tắt
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        //.requestMatchers("/api/admin/**").hasRole(UserRole.ADMIN.name())
+                        .anyRequest().permitAll()
+                     //   .anyRequest().authenticated()
                 )
 
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
 
                 .addFilterBefore(jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class)

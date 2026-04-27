@@ -1,42 +1,71 @@
 package com.backend.MusicApp.common.exception;
 
-import org.springframework.http.HttpStatus;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+public class GlobalExceptionHandler  {
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<ErrorResponse> handleAppException(AppException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                System.currentTimeMillis()
+                errorCode.getHttpStatus().value(),
+                errorCode.getCode(),
+                errorCode.getMessage()
         );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                errorMessage,
-                System.currentTimeMillis()
-        );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        String msg = ex.getBindingResult().getFieldError().getDefaultMessage();
+        return ResponseEntity.badRequest().body(new ErrorResponse(400, 400, msg));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Đã có lỗi hệ thống xảy ra: " + ex.getMessage(),
-                System.currentTimeMillis()
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        String msg = ex.getConstraintViolations().iterator().next().getMessage();
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(400, 400, msg));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String msg = String.format("Tham số '%s' không đúng định dạng", ex.getName());
+
+        return ResponseEntity.badRequest().body(new ErrorResponse(400, 400, msg));
+    }
+
+    // === Spring Security exceptions từ AuthenticationManager (login flow) ===
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUsernameNotFound(UsernameNotFoundException ex) {
+        return toResponse(ErrorCode.USER_NOT_FOUND);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+        return toResponse(ErrorCode.INVALID_PASSWORD);
+    }
+
+    @ExceptionHandler({DisabledException.class, LockedException.class})
+    public ResponseEntity<ErrorResponse> handleDisabledOrLocked(Exception ex) {
+        return toResponse(ErrorCode.USER_NOT_ACTIVE);
+    }
+
+    private ResponseEntity<ErrorResponse> toResponse(ErrorCode code) {
+        ErrorResponse body = new ErrorResponse(
+                code.getHttpStatus().value(), code.getCode(), code.getMessage()
         );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(code.getHttpStatus()).body(body);
     }
 }

@@ -1,7 +1,7 @@
 package com.backend.MusicApp.catalog.controller;
 
-import com.backend.MusicApp.catalog.dto.home.HomeResponse;
-import com.backend.MusicApp.catalog.service.CatalogService;
+import com.backend.MusicApp.catalog.dto.response.HomeResponse;
+import com.backend.MusicApp.catalog.internal.service.CatalogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

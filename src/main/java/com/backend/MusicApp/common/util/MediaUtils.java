@@ -1,5 +1,6 @@
 package com.backend.MusicApp.common.util;
 
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ public class MediaUtils {
         this.mediaBaseUrl = mediaBaseUrl;
     }
 
+    @Named("toFullUrl")
     public String buildUrl(String path) {
         if (path == null || path.isBlank()) {
             return null;

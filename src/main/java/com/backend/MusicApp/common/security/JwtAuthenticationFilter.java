@@ -10,18 +10,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenParser jwtTokenParser;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -37,25 +38,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 JwtClaims claims = jwtTokenParser.parse(token);
-
-                String roleName = claims.role();
-                if (!roleName.startsWith("ROLE_")) {
-                    roleName = "ROLE_" + roleName;
+                UserDetails principal = userDetailsService.loadUserById(claims.userId());
+                if (principal.isEnabled() && principal.isAccountNonLocked()) {
+                    Authentication auth = new UsernamePasswordAuthenticationToken(
+                            principal,
+                            null,
+                            principal.getAuthorities()
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-                Authentication auth = new UsernamePasswordAuthenticationToken(
-                        claims.userId(),
-                        null,
-                        List.of(new SimpleGrantedAuthority(roleName))
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
-            } catch (ExpiredJwtException e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (ExpiredJwtException | UsernameNotFoundException e) {
+                filterChain.doFilter(request, response);
                 return;
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars");
     }
 }
