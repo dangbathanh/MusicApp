@@ -32,4 +32,16 @@ public interface SongRepository extends JpaRepository<Song, Long> {
         WHERE id = :id
         """, nativeQuery = true)
     Optional<SongProjection> findSongMetadataById(@Param("id") Long id);
+
+    @Query(value = """
+        SELECT id, title, cover_url as coverUrl, artists_jsonb as artists,
+               album_id as albumId, duration_seconds as durationSeconds
+        FROM songs
+        WHERE title ILIKE '%' || :q || '%'
+        ORDER BY id
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<SongCardProjection> searchByTitle(@Param("q") String q,
+                                           @Param("limit") int limit,
+                                           @Param("offset") int offset);
 }

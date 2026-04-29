@@ -56,4 +56,15 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
     ORDER BY disc_number ASC, track_number ASC
     """, nativeQuery = true)
     List<AlbumSongItemProjection> findAllSongsInAlbum(@Param("albumId") Long albumId);
+
+    @Query(value = """
+        SELECT id, title, cover_url as coverUrl, artists_jsonb as artists
+        FROM albums
+        WHERE title ILIKE '%' || :q || '%'
+        ORDER BY id
+        LIMIT :limit OFFSET :offset
+        """, nativeQuery = true)
+    List<AlbumCardProjection> searchByTitle(@Param("q") String q,
+                                            @Param("limit") int limit,
+                                            @Param("offset") int offset);
 }
